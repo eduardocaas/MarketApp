@@ -6,8 +6,7 @@ import lombok.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-@Table(name = "users")
+@Table(name = "user")
 public class User {
 
   @Id
@@ -16,7 +15,7 @@ public class User {
 
   @Column(length = 100, nullable = false)
   private String name;
-  
+
   private Boolean isEnabled;
 
 }
