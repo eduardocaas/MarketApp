@@ -3,6 +3,8 @@ package com.efc.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,5 +19,8 @@ public class User {
   private String name;
 
   private Boolean isEnabled;
+
+  @OneToMany(mappedBy = "user")
+  private List<Sale> sales;
 
 }
