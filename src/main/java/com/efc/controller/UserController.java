@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/user")
@@ -20,7 +21,7 @@ public class UserController {
   }
 
   @GetMapping(value = "/{id}")
-  public ResponseEntity getById(@PathVariable Long id){
+  public ResponseEntity getById(@PathVariable Long id) {
     try {
       return ResponseEntity.ok().body(repository.findById(id));
     } catch (Exception error) {
@@ -29,12 +30,12 @@ public class UserController {
   }
 
   @GetMapping
-  public ResponseEntity getAll(){
+  public ResponseEntity getAll() {
     return ResponseEntity.ok().body(this.repository.findAll());
   }
 
   @PostMapping
-  public ResponseEntity save(@RequestBody User user){
+  public ResponseEntity save(@RequestBody User user) {
     try {
       user.setIsEnabled(true);
       User obj = repository.save(user);
@@ -43,5 +44,15 @@ public class UserController {
     } catch (Exception error) {
       return ResponseEntity.internalServerError().body(error.getMessage());
     }
+  }
+
+  @PutMapping
+  public ResponseEntity update(@RequestBody User user) {
+    Optional<User> obj = repository.findById(user.getId());
+    if(obj.isPresent()){
+      repository.save(user);
+      return ResponseEntity.ok().body(user);
+    }
+    return ResponseEntity.notFound().build();
   }
 }
