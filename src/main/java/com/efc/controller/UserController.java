@@ -3,6 +3,7 @@ package com.efc.controller;
 import com.efc.entity.User;
 import com.efc.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -55,4 +56,15 @@ public class UserController {
     }
     return ResponseEntity.notFound().build();
   }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity delete(@PathVariable("id") Long id){
+    try {
+      repository.deleteById(id);
+      return ResponseEntity.noContent().build();
+    } catch (Exception error) {
+      return ResponseEntity.internalServerError().body(error.getMessage());
+    }
+  }
+
 }
