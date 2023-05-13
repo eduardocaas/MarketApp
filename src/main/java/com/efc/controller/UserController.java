@@ -36,6 +36,7 @@ public class UserController {
   @PostMapping
   public ResponseEntity save(@RequestBody User user){
     try {
+      user.setIsEnabled(true);
       User obj = repository.save(user);
       URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getId()).toUri();
       return ResponseEntity.created(uri).build();
