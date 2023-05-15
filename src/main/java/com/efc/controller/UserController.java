@@ -1,5 +1,6 @@
 package com.efc.controller;
 
+import com.efc.entity.Product;
 import com.efc.entity.User;
 import com.efc.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,11 +24,11 @@ public class UserController {
 
   @GetMapping(value = "/{id}")
   public ResponseEntity getById(@PathVariable Long id) {
-    try {
-      return ResponseEntity.ok().body(repository.findById(id));
-    } catch (Exception error) {
-      return ResponseEntity.internalServerError().body(error.getMessage());
+    Optional<User> obj = repository.findById(id);
+    if (obj.isPresent()) {
+      return ResponseEntity.ok().body(obj);
     }
+    return ResponseEntity.notFound().build();
   }
 
   @GetMapping
