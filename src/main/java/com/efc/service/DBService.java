@@ -1,19 +1,24 @@
 package com.efc.service;
 
+import com.efc.entity.Product;
 import com.efc.entity.User;
+import com.efc.repository.ProductRepository;
 import com.efc.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 
 @Service
 public class DBService {
 
     private final UserRepository userRepository;
+    private final ProductRepository productRepository;
 
     @Autowired
-    public DBService(UserRepository userRepository) {
+    public DBService(UserRepository userRepository, ProductRepository productRepository) {
         this.userRepository = userRepository;
+        this.productRepository = productRepository;
     }
 
     public void loadDataDB() {
@@ -25,6 +30,12 @@ public class DBService {
         userRepository.save(u1);
         userRepository.save(u2);
         userRepository.save(u3);
+
+        Product p1 = new Product(null, "Feijão", new BigDecimal("7.99"), 50);
+        Product p2 = new Product(null, "Arroz", new BigDecimal("5.99"), 30);
+
+        productRepository.save(p1);
+        productRepository.save(p2);
 
     }
 
