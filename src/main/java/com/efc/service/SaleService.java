@@ -1,7 +1,9 @@
 package com.efc.service;
 
 import com.efc.dto.ProductDTO;
+import com.efc.dto.ProductInfoDTO;
 import com.efc.dto.SaleDTO;
+import com.efc.dto.SaleInfoDTO;
 import com.efc.entity.ItemSale;
 import com.efc.entity.Product;
 import com.efc.entity.Sale;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,6 +38,28 @@ public class SaleService {
         this.itemSaleRepository = itemSaleRepository;
     }
 
+    public List<SaleInfoDTO> getAll() {
+        return saleRepository.findAll().stream().map(sale -> getSaleInfo(sale)).collect(Collectors.toList());
+    }
+
+    private SaleInfoDTO getSaleInfo(Sale sale) {
+        SaleInfoDTO saleInfoDTO = new SaleInfoDTO();
+        saleInfoDTO.setUser(sale.getUser().getName());
+        saleInfoDTO.setDate(sale.getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        saleInfoDTO.setProducts(getProductInfo(sale.getItems()));
+
+        return saleInfoDTO;
+    }
+
+    private List<ProductInfoDTO> getProductInfo(List<ItemSale> items) {
+        return items.stream().map(item -> {
+           ProductInfoDTO productInfoDTO = new ProductInfoDTO();
+           productInfoDTO.setDescription(item.getProduct().getDescription());
+           productInfoDTO.setQuantity(item.getQuantity());
+           return productInfoDTO;
+        }).collect(Collectors.toList());
+    }
+
     @Transactional
     public Long save(SaleDTO saleDTO) {
 
@@ -46,11 +71,9 @@ public class SaleService {
         List<ItemSale> items = getItemSale(saleDTO.getItems());
 
         sale = saleRepository.save(sale);
-
         saveItemSale(items, sale);
 
         return sale.getId();
-
     }
 
     private void saveItemSale(List<ItemSale> items, Sale sale) {
