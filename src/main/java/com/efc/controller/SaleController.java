@@ -2,6 +2,8 @@ package com.efc.controller;
 
 import com.efc.dto.SaleDTO;
 import com.efc.exception.ProductException;
+import com.efc.exception.SaleException;
+import com.efc.exception.UserException;
 import com.efc.service.SaleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,7 +31,12 @@ public class SaleController {
 
     @GetMapping("/{id}")
     public ResponseEntity getById(@PathVariable("id") Long id) {
-        return ResponseEntity.ok().body(service.getById(id));
+        try {
+            return ResponseEntity.ok().body(service.getById(id));
+        } catch (SaleException error) {
+            return ResponseEntity.badRequest().body(error.getMessage());
+        }
+
     }
 
     @PostMapping
@@ -38,8 +45,8 @@ public class SaleController {
             Long id = service.save(saleDTO);
             URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(id).toUri();
             return ResponseEntity.created(uri).build();
-        } catch (ProductException productError) {
-            return ResponseEntity.badRequest().body(productError.getMessage());
+        } catch (ProductException | UserException userOrProductError) {
+            return ResponseEntity.badRequest().body(userOrProductError.getMessage());
         } catch (Exception error) {
             return ResponseEntity.internalServerError().body(error.getMessage());
         }

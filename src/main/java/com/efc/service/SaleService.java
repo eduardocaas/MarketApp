@@ -9,6 +9,8 @@ import com.efc.entity.Product;
 import com.efc.entity.Sale;
 import com.efc.entity.User;
 import com.efc.exception.ProductException;
+import com.efc.exception.SaleException;
+import com.efc.exception.UserException;
 import com.efc.repository.ItemSaleRepository;
 import com.efc.repository.ProductRepository;
 import com.efc.repository.SaleRepository;
@@ -20,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,7 +47,8 @@ public class SaleService {
     }
 
     public SaleInfoDTO getById(Long id) {
-        Sale sale = saleRepository.findById(id).get();
+        Sale sale = saleRepository.findById(id)
+                .orElseThrow(() -> new SaleException("Sale not found"));
         return getSaleInfo(sale);
     }
 
@@ -68,8 +72,8 @@ public class SaleService {
 
     @Transactional
     public Long save(SaleDTO saleDTO) {
-
-        User user = userRepository.findById(saleDTO.getUser_id()).get();
+        User user = userRepository.findById(saleDTO.getUser_id())
+                .orElseThrow(() -> new UserException("User not found"));
 
         Sale sale = new Sale();
         sale.setUser(user);
@@ -90,6 +94,9 @@ public class SaleService {
     }
 
     private List<ItemSale> getItemSale(List<ProductDTO> products) {
+        if(products.isEmpty()){
+            throw new ProductException("Order without products");
+        }
         return products.stream().map(item -> {
             Product product = productRepository.getReferenceById(item.getProduct_id());
             ItemSale itemSale = new ItemSale();
