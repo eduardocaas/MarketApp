@@ -1,8 +1,11 @@
 package com.efc.controller;
 
+import com.efc.dto.UserDTO;
 import com.efc.entity.Product;
 import com.efc.entity.User;
+import com.efc.exception.NotFoundException;
 import com.efc.repository.UserRepository;
+import com.efc.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,54 +19,60 @@ import java.util.Optional;
 @RequestMapping("/user")
 public class UserController {
 
-  private final UserRepository repository;
+  private final UserService userService;
 
-  public UserController(@Autowired UserRepository repository) {
-    this.repository = repository;
+  public UserController(@Autowired UserService userService) {
+    this.userService = userService;
   }
 
   @GetMapping(value = "/{id}")
   public ResponseEntity getById(@PathVariable Long id) {
-    Optional<User> obj = repository.findById(id);
-    if (obj.isPresent()) {
+    UserDTO obj = userService.findById(id);
+   try {
       return ResponseEntity.ok().body(obj);
     }
-    return ResponseEntity.notFound().build();
+   catch (NotFoundException error) {
+     return ResponseEntity.badRequest().body(error.getMessage());
+   }
   }
 
   @GetMapping
   public ResponseEntity getAll() {
-    return ResponseEntity.ok().body(this.repository.findAll());
+    return ResponseEntity.ok().body(this.userService.getAll());
   }
 
   @PostMapping
   public ResponseEntity save(@RequestBody User user) {
     try {
       user.setIsEnabled(true);
-      User obj = repository.save(user);
+      UserDTO obj = userService.save(user);
       URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getId()).toUri();
-      return ResponseEntity.created(uri).build();
-    } catch (Exception error) {
+      return ResponseEntity.created(uri).body(obj);
+    }
+    catch (Exception error) {
       return ResponseEntity.internalServerError().body(error.getMessage());
     }
   }
 
   @PutMapping
   public ResponseEntity update(@RequestBody User user) {
-    Optional<User> obj = repository.findById(user.getId());
-    if(obj.isPresent()){
-      repository.save(user);
+    try {
+      userService.findById(user.getId());
+      userService.save(user);
       return ResponseEntity.ok().body(user);
     }
-    return ResponseEntity.notFound().build();
+    catch (NotFoundException error) {
+      return ResponseEntity.badRequest().body(error.getMessage());
+    }
   }
 
   @DeleteMapping("/{id}")
   public ResponseEntity delete(@PathVariable("id") Long id){
     try {
-      repository.deleteById(id);
+      userService.deleteById(id);
       return ResponseEntity.noContent().build();
-    } catch (Exception error) {
+    }
+    catch (Exception error) {
       return ResponseEntity.internalServerError().body(error.getMessage());
     }
   }
