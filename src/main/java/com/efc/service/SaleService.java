@@ -8,6 +8,7 @@ import com.efc.entity.ItemSale;
 import com.efc.entity.Product;
 import com.efc.entity.Sale;
 import com.efc.entity.User;
+import com.efc.exception.ProductException;
 import com.efc.repository.ItemSaleRepository;
 import com.efc.repository.ProductRepository;
 import com.efc.repository.SaleRepository;
@@ -40,6 +41,11 @@ public class SaleService {
 
     public List<SaleInfoDTO> getAll() {
         return saleRepository.findAll().stream().map(sale -> getSaleInfo(sale)).collect(Collectors.toList());
+    }
+
+    public SaleInfoDTO getById(Long id) {
+        Sale sale = saleRepository.findById(id).get();
+        return getSaleInfo(sale);
     }
 
     private SaleInfoDTO getSaleInfo(Sale sale) {
@@ -89,8 +95,19 @@ public class SaleService {
             ItemSale itemSale = new ItemSale();
             itemSale.setProduct(product);
             itemSale.setQuantity(item.getQuantity());
+
+            if(product.getQuantity() == 0){
+                throw new ProductException("Product out of stock: " + product.getDescription());
+            }
+            else if(product.getQuantity() < item.getQuantity()) {
+                throw new ProductException(String.format("Quantity of: %s (%s) exceeds stock quantity",
+                                                        product.getDescription(), item.getQuantity()));
+            }
+            Integer total = product.getQuantity() - item.getQuantity();
+            product.setQuantity(total);
+            productRepository.save(product);
+
             return itemSale;
         }).collect(Collectors.toList());
     }
-
 }
