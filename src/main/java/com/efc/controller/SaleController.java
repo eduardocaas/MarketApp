@@ -39,7 +39,7 @@ public class SaleController {
             URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(id).toUri();
             return ResponseEntity.created(uri).build();
         } catch (ProductException productError) {
-            return new ResponseEntity(productError.getMessage(), HttpStatus.NO_CONTENT);
+            return ResponseEntity.badRequest().body(productError.getMessage());
         } catch (Exception error) {
             return ResponseEntity.internalServerError().body(error.getMessage());
         }
