@@ -2,10 +2,8 @@ package com.efc.controller;
 
 import com.efc.dto.ResponseDTO;
 import com.efc.dto.SaleDTO;
-import com.efc.dto.SaleInfoDTO;
-import com.efc.exception.ProductException;
+import com.efc.exception.NotFoundException;
 import com.efc.exception.SaleException;
-import com.efc.exception.UserException;
 import com.efc.service.SaleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.List;
 
 @RestController
 @RequestMapping("/sale")
@@ -35,10 +32,10 @@ public class SaleController {
     public ResponseEntity getById(@PathVariable("id") Long id) {
         try {
             return ResponseEntity.ok().body(new ResponseDTO<>("", service.getById(id)));
-        } catch (SaleException error) {
+        }
+        catch (SaleException error) {
             return ResponseEntity.badRequest().body(error.getMessage());
         }
-
     }
 
     @PostMapping
@@ -47,9 +44,11 @@ public class SaleController {
             Long id = service.save(saleDTO);
             URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(id).toUri();
             return ResponseEntity.created(uri).body(new ResponseDTO<>("Venda realizada com sucesso", id));
-        } catch (ProductException | UserException userOrProductError) {
-            return ResponseEntity.badRequest().body(new ResponseDTO<>(userOrProductError.getMessage(), null));
-        } catch (Exception error) {
+        }
+        catch (NotFoundException notFoundException) {
+            return ResponseEntity.badRequest().body(new ResponseDTO<>(notFoundException.getMessage(), null));
+        }
+        catch (Exception error) {
             return ResponseEntity.internalServerError().body(new ResponseDTO<>(error.getMessage(), null));
         }
     }
