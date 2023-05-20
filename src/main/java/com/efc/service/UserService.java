@@ -35,6 +35,15 @@ public class UserService {
         return getUserDTO(obj);
     }
 
+    public UserDTO update(User user) {
+        Optional<User> obj = userRepository.findById(user.getId());
+        if(obj.isEmpty()){
+            throw new NotFoundException("User not found");
+        }
+        userRepository.save(user);
+        return getUserDTO(user);
+    }
+
     public void deleteById(Long id) {
         userRepository.deleteById(id);
     }

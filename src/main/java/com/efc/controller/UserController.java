@@ -57,9 +57,7 @@ public class UserController {
   @PutMapping
   public ResponseEntity update(@RequestBody User user) {
     try {
-      userService.findById(user.getId());
-      userService.save(user);
-      return ResponseEntity.ok().body(user);
+      return ResponseEntity.ok().body(userService.update(user));
     }
     catch (NotFoundException error) {
       return ResponseEntity.badRequest().body(error.getMessage());
