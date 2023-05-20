@@ -8,9 +8,8 @@ import com.efc.entity.ItemSale;
 import com.efc.entity.Product;
 import com.efc.entity.Sale;
 import com.efc.entity.User;
-import com.efc.exception.ProductException;
+import com.efc.exception.NotFoundException;
 import com.efc.exception.SaleException;
-import com.efc.exception.UserException;
 import com.efc.repository.ItemSaleRepository;
 import com.efc.repository.ProductRepository;
 import com.efc.repository.SaleRepository;
@@ -22,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,7 +46,7 @@ public class SaleService {
 
     public SaleInfoDTO getById(Long id) {
         Sale sale = saleRepository.findById(id)
-                .orElseThrow(() -> new SaleException("Sale not found"));
+                .orElseThrow(() -> new NotFoundException("Sale not found"));
         return getSaleInfo(sale);
     }
 
@@ -64,6 +62,7 @@ public class SaleService {
     private List<ProductInfoDTO> getProductInfo(List<ItemSale> items) {
         return items.stream().map(item -> {
            ProductInfoDTO productInfoDTO = new ProductInfoDTO();
+           productInfoDTO.setId(item.getId());
            productInfoDTO.setDescription(item.getProduct().getDescription());
            productInfoDTO.setQuantity(item.getQuantity());
            return productInfoDTO;
@@ -73,7 +72,7 @@ public class SaleService {
     @Transactional
     public Long save(SaleDTO saleDTO) {
         User user = userRepository.findById(saleDTO.getUser_id())
-                .orElseThrow(() -> new UserException("User not found"));
+                .orElseThrow(() -> new NotFoundException("User not found"));
 
         Sale sale = new Sale();
         sale.setUser(user);
@@ -95,7 +94,7 @@ public class SaleService {
 
     private List<ItemSale> getItemSale(List<ProductDTO> products) {
         if(products.isEmpty()){
-            throw new ProductException("Order without products");
+            throw new SaleException("Order without products");
         }
         return products.stream().map(item -> {
             Product product = productRepository.getReferenceById(item.getProduct_id());
@@ -104,10 +103,10 @@ public class SaleService {
             itemSale.setQuantity(item.getQuantity());
 
             if(product.getQuantity() == 0){
-                throw new ProductException("Product out of stock: " + product.getDescription());
+                throw new SaleException("Product out of stock: " + product.getDescription());
             }
             else if(product.getQuantity() < item.getQuantity()) {
-                throw new ProductException(String.format("Quantity of: %s (%s) exceeds stock quantity (%s)",
+                throw new SaleException(String.format("Quantity of: %s (%s) exceeds stock quantity (%s)",
                                             product.getDescription(), item.getQuantity(), product.getQuantity()));
             }
             Integer total = product.getQuantity() - item.getQuantity();
