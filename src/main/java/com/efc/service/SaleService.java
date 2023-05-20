@@ -100,8 +100,8 @@ public class SaleService {
                 throw new ProductException("Product out of stock: " + product.getDescription());
             }
             else if(product.getQuantity() < item.getQuantity()) {
-                throw new ProductException(String.format("Quantity of: %s (%s) exceeds stock quantity",
-                                                        product.getDescription(), item.getQuantity()));
+                throw new ProductException(String.format("Quantity of: %s (%s) exceeds stock quantity (%s)",
+                                            product.getDescription(), item.getQuantity(), product.getQuantity()));
             }
             Integer total = product.getQuantity() - item.getQuantity();
             product.setQuantity(total);
