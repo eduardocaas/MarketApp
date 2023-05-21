@@ -1,19 +1,16 @@
 package com.efc.controller;
 
+import com.efc.dto.ResponseDTO;
 import com.efc.dto.UserDTO;
-import com.efc.entity.Product;
 import com.efc.entity.User;
 import com.efc.exception.NotFoundException;
-import com.efc.repository.UserRepository;
 import com.efc.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/user")
@@ -25,20 +22,21 @@ public class UserController {
     this.userService = userService;
   }
 
+
   @GetMapping(value = "/{id}")
   public ResponseEntity getById(@PathVariable Long id) {
     UserDTO obj = userService.findById(id);
    try {
-      return ResponseEntity.ok().body(obj);
+      return ResponseEntity.ok().body(new ResponseDTO<>("", obj));
     }
    catch (NotFoundException error) {
-     return ResponseEntity.badRequest().body(error.getMessage());
+     return ResponseEntity.badRequest().body(new ResponseDTO<>(error.getMessage(), id));
    }
   }
 
   @GetMapping
   public ResponseEntity getAll() {
-    return ResponseEntity.ok().body(this.userService.getAll());
+    return ResponseEntity.ok().body(new ResponseDTO<>("",this.userService.getAll()));
   }
 
   @PostMapping
@@ -47,20 +45,20 @@ public class UserController {
       user.setIsEnabled(true);
       UserDTO obj = userService.save(user);
       URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getId()).toUri();
-      return ResponseEntity.created(uri).body(obj);
+      return ResponseEntity.created(uri).body(new ResponseDTO<>("User created", obj));
     }
     catch (Exception error) {
-      return ResponseEntity.internalServerError().body(error.getMessage());
+      return ResponseEntity.internalServerError().body(new ResponseDTO<>(error.getMessage(), user));
     }
   }
 
   @PutMapping
   public ResponseEntity update(@RequestBody User user) {
     try {
-      return ResponseEntity.ok().body(userService.update(user));
+      return ResponseEntity.ok().body(new ResponseDTO<>("User updated", userService.update(user)));
     }
     catch (NotFoundException error) {
-      return ResponseEntity.badRequest().body(error.getMessage());
+      return ResponseEntity.badRequest().body(new ResponseDTO<>(error.getMessage(), user));
     }
   }
 
@@ -70,8 +68,8 @@ public class UserController {
       userService.deleteById(id);
       return ResponseEntity.noContent().build();
     }
-    catch (Exception error) {
-      return ResponseEntity.internalServerError().body(error.getMessage());
+    catch (NotFoundException error) {
+      return ResponseEntity.badRequest().body(new ResponseDTO<>(error.getMessage(), id));
     }
   }
 
