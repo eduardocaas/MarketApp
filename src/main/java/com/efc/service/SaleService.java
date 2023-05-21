@@ -17,9 +17,12 @@ import com.efc.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -60,6 +63,11 @@ public class SaleService {
     }
 
     private List<ProductInfoDTO> getProductInfo(List<ItemSale> items) {
+
+        if(CollectionUtils.isEmpty(items)){
+            return Collections.emptyList();
+        }
+
         return items.stream().map(item -> {
            ProductInfoDTO productInfoDTO = new ProductInfoDTO();
            productInfoDTO.setId(item.getId());
@@ -97,7 +105,9 @@ public class SaleService {
             throw new SaleException("Order without products");
         }
         return products.stream().map(item -> {
-            Product product = productRepository.getReferenceById(item.getProduct_id());
+            Product product = productRepository.findById(item.getProduct_id())
+                    .orElseThrow(() -> new NotFoundException("Product not found"));
+
             ItemSale itemSale = new ItemSale();
             itemSale.setProduct(product);
             itemSale.setQuantity(item.getQuantity());
