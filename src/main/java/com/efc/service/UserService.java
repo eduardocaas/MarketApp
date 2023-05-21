@@ -45,6 +45,10 @@ public class UserService {
     }
 
     public void deleteById(Long id) {
+        Optional<User> obj = userRepository.findById(id);
+        if (obj.isEmpty()){
+            throw new NotFoundException("User not found");
+        }
         userRepository.deleteById(id);
     }
 
