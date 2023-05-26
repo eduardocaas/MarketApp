@@ -1,8 +1,11 @@
 package com.efc.controller;
 
+import com.efc.dto.ProductDTO;
 import com.efc.entity.Product;
 import com.efc.entity.User;
 import com.efc.repository.ProductRepository;
+import jakarta.validation.Valid;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,10 +19,12 @@ import java.util.Optional;
 public class ProductController {
 
   private final ProductRepository repository;
+  private ModelMapper mapper;
 
   @Autowired
   public ProductController(ProductRepository repository) {
     this.repository = repository;
+    this.mapper = new ModelMapper();
   }
 
   @GetMapping
@@ -37,9 +42,9 @@ public class ProductController {
   }
 
   @PostMapping
-  public ResponseEntity save(@RequestBody Product product) {
+  public ResponseEntity save(@Valid @RequestBody ProductDTO productDTO) {
     try {
-      Product obj = repository.save(product);
+      Product obj = repository.save(mapper.map(productDTO, Product.class));
       URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getId()).toUri();
       return ResponseEntity.created(uri).build();
     } catch (Exception error) {
@@ -48,11 +53,11 @@ public class ProductController {
   }
 
   @PutMapping
-  public ResponseEntity update(@RequestBody Product product) {
-    Optional<Product> obj = repository.findById(product.getId());
+  public ResponseEntity update(@Valid @RequestBody ProductDTO productDTO) {
+    Optional<Product> obj = repository.findById(productDTO.getId());
     if(obj.isPresent()) {
-      repository.save(product);
-      return ResponseEntity.ok().body(product);
+      repository.save(mapper.map(productDTO, Product.class));
+      return ResponseEntity.ok().body(productDTO);
     }
     return ResponseEntity.notFound().build();
   }
