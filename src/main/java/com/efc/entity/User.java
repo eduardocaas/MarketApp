@@ -18,8 +18,16 @@ public class User {
   private Long id;
 
   @Column(length = 100, nullable = false)
-  @NotBlank(message = "Name field is required")
+  @NotBlank(message = "Name is required")
   private String name;
+
+  @Column(length = 30, nullable = false)
+  @NotBlank(message = "Username is required")
+  private String username;
+
+  @Column(length = 30, nullable = false)
+  @NotBlank(message = "Password is required")
+  private String password;
 
   private Boolean isEnabled;
 
