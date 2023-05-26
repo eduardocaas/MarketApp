@@ -21,4 +21,12 @@ public class ResponseDTO<T> {
         this.messages = Arrays.asList(message);
         this.data = data;
     }
+
+    public ResponseDTO(List<String> messages) {
+        this.messages = messages;
+    }
+
+    public ResponseDTO(String message) {
+        this.messages = Arrays.asList(message);
+    }
 }
