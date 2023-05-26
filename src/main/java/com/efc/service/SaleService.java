@@ -1,6 +1,6 @@
 package com.efc.service;
 
-import com.efc.dto.ProductDTO;
+import com.efc.dto.ProductSaleDTO;
 import com.efc.dto.ProductInfoDTO;
 import com.efc.dto.SaleDTO;
 import com.efc.dto.SaleInfoDTO;
@@ -21,7 +21,6 @@ import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -100,7 +99,7 @@ public class SaleService {
         }
     }
 
-    private List<ItemSale> getItemSale(List<ProductDTO> products) {
+    private List<ItemSale> getItemSale(List<ProductSaleDTO> products) {
         if(products.isEmpty()){
             throw new SaleException("Order without products");
         }
