@@ -4,6 +4,7 @@ import com.efc.dto.UserDTO;
 import com.efc.entity.User;
 import com.efc.exception.NotFoundException;
 import com.efc.repository.UserRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,10 +16,12 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private UserRepository userRepository;
+    private ModelMapper mapper;
 
     @Autowired
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
+        this.mapper = new ModelMapper();
     }
 
     public UserDTO findById(Long id) {
@@ -30,12 +33,14 @@ public class UserService {
         return userRepository.findAll().stream().map(user -> getUserDTO(user)).collect(Collectors.toList());
     }
 
-    public UserDTO save(User user) {
+    public UserDTO save(UserDTO userDTO) {
+        User user = mapper.map(userDTO, User.class);
         User obj = userRepository.save(user);
         return getUserDTO(obj);
     }
 
-    public UserDTO update(User user) {
+    public UserDTO update(UserDTO userDTO) {
+        User user = mapper.map(userDTO, User.class);
         Optional<User> obj = userRepository.findById(user.getId());
         if(obj.isEmpty()){
             throw new NotFoundException("User not found");
