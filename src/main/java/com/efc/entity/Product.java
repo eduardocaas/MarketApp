@@ -22,15 +22,15 @@ public class Product {
   private Long id;
 
   @Column(length = 150, nullable = false)
-  @NotBlank(message = "Description field is required")
+  @NotBlank(message = "Description is required")
   private String description;
 
   @Column(length = 20, precision = 20, scale = 2, nullable = false)
-  @NotNull(message = "Price field is required")
+  @NotNull(message = "Price is required")
   private BigDecimal price;
 
   @Column(nullable = false)
-  @NotNull(message = "Quantity field is required")
+  @NotNull(message = "Quantity is required")
   @Min(value = 1, message = "Minimum quantity is 1")
   private Integer quantity;
 
