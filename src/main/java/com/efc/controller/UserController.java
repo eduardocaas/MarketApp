@@ -5,6 +5,7 @@ import com.efc.dto.UserDTO;
 import com.efc.entity.User;
 import com.efc.exception.NotFoundException;
 import com.efc.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,7 +41,7 @@ public class UserController {
   }
 
   @PostMapping
-  public ResponseEntity save(@RequestBody User user) {
+  public ResponseEntity save(@Valid @RequestBody UserDTO user) {
     try {
       user.setIsEnabled(true);
       UserDTO obj = userService.save(user);
@@ -53,7 +54,7 @@ public class UserController {
   }
 
   @PutMapping
-  public ResponseEntity update(@RequestBody User user) {
+  public ResponseEntity update(@Valid @RequestBody UserDTO user) {
     try {
       return ResponseEntity.ok().body(new ResponseDTO<>("User updated", userService.update(user)));
     }
