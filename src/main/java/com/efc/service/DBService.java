@@ -1,5 +1,6 @@
 package com.efc.service;
 
+import com.efc.dto.UserDTO;
 import com.efc.entity.Product;
 import com.efc.entity.User;
 import com.efc.repository.ProductRepository;
@@ -12,24 +13,24 @@ import java.math.BigDecimal;
 @Service
 public class DBService {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final ProductRepository productRepository;
 
     @Autowired
-    public DBService(UserRepository userRepository, ProductRepository productRepository) {
-        this.userRepository = userRepository;
+    public DBService(UserService userService, ProductRepository productRepository) {
+        this.userService = userService;
         this.productRepository = productRepository;
     }
 
     public void loadDataDB() {
 
-        User u1 = new User(null, "Fulano", true, null);
-        User u2 = new User(null, "Beltrano", true, null);
-        User u3 = new User(null, "Ciclano", true, null);
+        UserDTO u1 = new UserDTO(null, "Fulano", "fulano123", "abc123",  true);
+        UserDTO u2 = new UserDTO(null, "Beltrano", "beeltraano", "ajKty7g", true);
+        UserDTO u3 = new UserDTO(null, "Ciclano", "cicla", "cicla2000", true);
 
-        userRepository.save(u1);
-        userRepository.save(u2);
-        userRepository.save(u3);
+        userService.save(u1);
+        userService.save(u2);
+        userService.save(u3);
 
         Product p1 = new Product(null, "Feijão", new BigDecimal("7.99"), 50);
         Product p2 = new Product(null, "Arroz", new BigDecimal("5.99"), 30);
