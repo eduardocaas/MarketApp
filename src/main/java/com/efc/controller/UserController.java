@@ -2,6 +2,7 @@ package com.efc.controller;
 
 import com.efc.dto.ResponseDTO;
 import com.efc.dto.UserDTO;
+import com.efc.dto.UserResponseDTO;
 import com.efc.entity.User;
 import com.efc.exception.NotFoundException;
 import com.efc.service.UserService;
@@ -26,7 +27,7 @@ public class UserController {
 
   @GetMapping(value = "/{id}")
   public ResponseEntity getById(@PathVariable Long id) {
-    UserDTO obj = userService.findById(id);
+    UserResponseDTO obj = userService.findById(id);
    try {
       return ResponseEntity.ok().body(new ResponseDTO<>("", obj));
     }

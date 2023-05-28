@@ -1,9 +1,11 @@
 package com.efc.service;
 
 import com.efc.dto.UserDTO;
+import com.efc.dto.UserResponseDTO;
 import com.efc.entity.User;
 import com.efc.exception.NotFoundException;
 import com.efc.repository.UserRepository;
+import com.efc.security.SecurityConfig;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,16 +26,17 @@ public class UserService {
         this.mapper = new ModelMapper();
     }
 
-    public UserDTO findById(Long id) {
+    public UserResponseDTO findById(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found"));
-        return getUserDTO(user);
+        return getUserResponseDTO(user);
     }
 
-    public List<UserDTO> getAll() {
-        return userRepository.findAll().stream().map(user -> getUserDTO(user)).collect(Collectors.toList());
+    public List<UserResponseDTO> getAll() {
+        return userRepository.findAll().stream().map(user -> getUserResponseDTO(user)).collect(Collectors.toList());
     }
 
     public UserDTO save(UserDTO userDTO) {
+        userDTO.setPassword(SecurityConfig.passwordEncoder().encode(userDTO.getPassword()));
         User user = mapper.map(userDTO, User.class);
         User obj = userRepository.save(user);
         return getUserDTO(obj);
@@ -58,10 +61,21 @@ public class UserService {
     }
 
     public UserDTO getUserDTO(User user) {
-        UserDTO userDTO = new UserDTO();
-        userDTO.setId(user.getId());
-        userDTO.setName(user.getName());
-        userDTO.setIsEnabled((user.getIsEnabled()));
-        return userDTO;
+        return UserDTO.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .username(user.getUsername())
+                .password(user.getPassword())
+                .isEnabled(user.getIsEnabled())
+                .build();
+    }
+
+    public UserResponseDTO getUserResponseDTO(User user) {
+        return UserResponseDTO.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .username(user.getUsername())
+                .isEnabled(user.getIsEnabled())
+                .build();
     }
 }
