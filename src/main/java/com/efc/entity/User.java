@@ -25,7 +25,7 @@ public class User {
   @NotBlank(message = "Username is required")
   private String username;
 
-  @Column(length = 30, nullable = false)
+  @Column(length = 60, nullable = false)
   @NotBlank(message = "Password is required")
   private String password;
 
