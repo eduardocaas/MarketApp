@@ -78,4 +78,8 @@ public class UserService {
                 .isEnabled(user.getIsEnabled())
                 .build();
     }
+
+    public User getByUsername(String username) {
+        return userRepository.findUserByUsername(username);
+    }
 }
