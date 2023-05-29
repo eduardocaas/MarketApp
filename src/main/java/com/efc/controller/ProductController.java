@@ -2,7 +2,6 @@ package com.efc.controller;
 
 import com.efc.dto.ProductDTO;
 import com.efc.entity.Product;
-import com.efc.entity.User;
 import com.efc.repository.ProductRepository;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
