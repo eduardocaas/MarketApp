@@ -2,9 +2,7 @@ package com.efc.service;
 
 import com.efc.dto.UserDTO;
 import com.efc.entity.Product;
-import com.efc.entity.User;
 import com.efc.repository.ProductRepository;
-import com.efc.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
