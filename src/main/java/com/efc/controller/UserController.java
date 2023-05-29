@@ -3,7 +3,6 @@ package com.efc.controller;
 import com.efc.dto.ResponseDTO;
 import com.efc.dto.UserDTO;
 import com.efc.dto.UserResponseDTO;
-import com.efc.entity.User;
 import com.efc.exception.NotFoundException;
 import com.efc.service.UserService;
 import jakarta.validation.Valid;
