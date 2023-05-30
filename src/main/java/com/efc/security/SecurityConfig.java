@@ -34,6 +34,8 @@ public class SecurityConfig {
                 .httpBasic();
 
          http
+            .cors()
+            .and()
             .csrf()
                 .disable(); //Apenas em ambiente de dev
 
