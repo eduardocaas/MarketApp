@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vue - Test</title>
+</head>
+<body>
+    <div id="app">
+        
+    </div>
+
+    <div id="users"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/vue@3"></script>
+
+    <script>
+        let users = document.getElementById('users');
+        const { createApp } = Vue;
+        const baseUrl = "http://localhost:8080/user";
+        const mainContainer = {
+            data() {
+                return {
+
+                };
+            },
+            mounted() {
+                axios.get(baseUrl, {
+                    auth: {
+                        username: 'fulano123',
+                        password: 'abc123'
+                    }
+                }).then(response => {
+                    response.data.data.forEach(element => {
+                        users.innerHTML += "<p>" + element.name + "</p>";
+                    });
+                });
+                
+            },
+        };
+
+        const app = createApp(mainContainer);
+        app.mount('#app');
+    </script>
+</body>
+</html>
