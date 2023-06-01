@@ -1,7 +1,9 @@
 package com.efc.controller;
 
 import com.efc.dto.ResponseDTO;
+import com.efc.exception.PasswordNotFoundException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -23,5 +25,17 @@ public class ApplicationAdviceController {
             errors.add(message);
         });
         return new ResponseDTO(errors);
+    }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResponseDTO handlerUsernameNotFoundException(UsernameNotFoundException exception) {
+        return new ResponseDTO(exception.getMessage());
+    }
+
+    @ExceptionHandler(PasswordNotFoundException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResponseDTO handlerPasswordNotFoundException(PasswordNotFoundException exception) {
+        return new ResponseDTO(exception.getMessage());
     }
 }
