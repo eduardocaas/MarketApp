@@ -24,6 +24,7 @@ public class LoginController {
         try {
             userDetailsService.verifyUserCredentials(login);
             // todo: gerar token
+            return new ResponseEntity<>("Testing 1, 2, 3...", HttpStatus.OK);
         } catch (Exception error) {
             return new ResponseEntity<>(new ResponseDTO(error.getMessage()), HttpStatus.UNAUTHORIZED);
         }
