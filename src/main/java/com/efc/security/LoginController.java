@@ -1,10 +1,11 @@
-package com.efc.controller;
+package com.efc.security;
 
 import com.efc.dto.LoginDTO;
 import com.efc.dto.ResponseDTO;
-import com.efc.security.CustomUserDetailsService;
+import com.efc.dto.TokenDTO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,12 +20,19 @@ public class LoginController {
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
+    @Autowired
+    private JwtService jwtService;
+
+    @Value("${security.jwt.expiration}")
+    private String expiration;
+
     @PostMapping()
     public ResponseEntity login(@Valid @RequestBody LoginDTO login) {
         try {
             userDetailsService.verifyUserCredentials(login);
-            // todo: gerar token
-            return new ResponseEntity<>("Testing 1, 2, 3...", HttpStatus.OK);
+
+            String token = jwtService.generateToken(login.getUsername());
+            return new ResponseEntity<>(new TokenDTO(token, expiration), HttpStatus.OK);
         } catch (Exception error) {
             return new ResponseEntity<>(new ResponseDTO(error.getMessage()), HttpStatus.UNAUTHORIZED);
         }
