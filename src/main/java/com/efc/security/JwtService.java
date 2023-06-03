@@ -1,5 +1,6 @@
 package com.efc.security;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -25,12 +26,29 @@ public class JwtService {
         currentTime.add(Calendar.MINUTE, expiration);
         Date expirationDate = currentTime.getTime();
 
-        SecretKey secretKey = Keys.hmacShaKeyFor(key.getBytes(StandardCharsets.UTF_8));
+        SecretKey secretKey = getSecretKey();
 
         return Jwts.builder()
                 .setSubject(username)
                 .setExpiration(expirationDate)
                 .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    private SecretKey getSecretKey() {
+        return Keys.hmacShaKeyFor(key.getBytes(StandardCharsets.UTF_8));
+    }
+
+    private Claims getClaims(String token) {
+        SecretKey secretKey = getSecretKey();
+        return Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    public String getUsername(String token) {
+        return getClaims(token).getSubject();
     }
 }
